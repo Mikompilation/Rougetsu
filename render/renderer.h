@@ -1,0 +1,6 @@
+#ifndef ROUGETSU_RENDERER_H
+#define ROUGETSU_RENDERER_H
+
+void MeshType0x82();
+
+#endif//ROUGETSU_RENDERER_H

@@ -1,4 +1,5 @@
 #include "gra3dSGD.h"
+#include "../render/Vu1Mem.h"
 #include "../sce/libvu0.h"
 #include "g3dCore.h"
 #include "g3dDebug.h"
@@ -7,7 +8,10 @@
 #include "gra3dDma.h"
 #include "gra3dSGDData.h"
 #include "gra3dShadow.h"
+#include "raylib.h"
+#include "raymath.h"
 #include <cstdio>
+#include <vector>
 
 static float (*s_pGlobalVertexBuffer)[4];
 static float (*s_pGlobalNormalBuffer)[4];
@@ -17,6 +21,7 @@ SGDPROCUNITHEADER *save_bw_pointer;
 static SGDPROCUNITHEADER *s_ppuhVUVN;
 static SGDCOORDINATE *s_pCoordBase;
 static SGDFILEHEADER *s_pSGDTop;
+
 CoordCache ccahe;
 int edge_check;
 SGDPROCUNITHEADER *previous_tri2_prim;
@@ -847,8 +852,8 @@ void SetVUMeshData(SGDPROCUNITHEADER *pPUHead)
   SGDVUMESHDATA *pVUMeshData = (SGDVUMESHDATA*) &pPUHead[1];
   SGDVUVNDESC *pVUVNDesc = (SGDVUVNDESC*)&s_ppuhVUVN->VUVNDesc;
   SGDVUVNDATA *pVUVNData = (SGDVUVNDATA*) &s_ppuhVUVN[1];
-
-  printf("rVUMeshDesc.ucMeshType: %d\n", rVUMeshDesc.ucMeshType);
+  auto pVUVNData2 = (SGDPROCUNITDATA *) &s_ppuhVUVN[1];
+  std::vector<Vector3> v;
   
   switch (rVUMeshDesc.ucMeshType & 0xD3)
   {
@@ -871,6 +876,23 @@ void SetVUMeshData(SGDPROCUNITHEADER *pPUHead)
       gra3dCallMicroSubroutine2(nullptr);
       break;
     case 0x82:
+      
+      for (int i = 0; i < pVUVNDesc->sNumVertex; i++)
+      {
+        auto vv = Vector3(pVUVNData2->VUVNData_Preset.avt2[i].vVertex[0], 
+                          pVUVNData2->VUVNData_Preset.avt2[i].vVertex[1],
+                          pVUVNData2->VUVNData_Preset.avt2[i].vVertex[2]);
+        
+        auto m = (Matrix*)g_scratchpadLayout.Vu1Mem.Packed.Transform.matLocalWorld;
+
+        auto mt = MatrixTranspose(*m);
+        
+        vv = Vector3Transform(vv, mt);
+        v.push_back(vv);
+      }
+      
+      DrawTriangleStrip3D(v.data() , pVUVNDesc->sNumVertex, DARKGRAY);  
+      
       g3dDmaAddPacket(pVUMeshData, rVUMeshDesc.iTagSize);
       g3dDmaAddPacket(pVUVNData, pVUVNDesc->ucSize);
       // 0x598
@@ -885,11 +907,15 @@ void SetVUMeshData(SGDPROCUNITHEADER *pPUHead)
   }
 }
 
-/// NOT IMPLEMENTED
 void _SetCoordData(SGDPROCUNITHEADER *pPUHead) 
 {
+  g3ddbg_ASSERT(s_pCoordBase, "");
+  sgdCalcBoneCoordinate(s_pCoordBase, gra3dsgdGetNumBlock() - 1);
+  SGDCOORDINATE *cp0 = gra3dsgdGetCoordinate(pPUHead->CoordDesc.iCoordId0);
+  memcpy(&g_scratchpadLayout.Vu1Mem.Packed.Transform.matLocalWorld, &cp0->matCoord, sizeof(float[4][4]));
 }
 
+/// NOT IMPLEMENTED
 void sgdResetMaterialCache(SGDFILEHEADER *pSGDData)
 {
 }

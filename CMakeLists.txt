@@ -24,6 +24,11 @@ add_executable(Rougetsu
         utils.h
         sce/libvu0.cpp
         sce/libvu0.h
+        render/renderer.cpp
+        render/renderer.h
+        render/Vu1Mem.cpp
+        render/Vu1Mem.h
+        graph3d/g3d_types.h
 )
 
 target_link_libraries(Rougetsu raylib)

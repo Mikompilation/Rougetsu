@@ -11,6 +11,7 @@ typedef int sceVu0IVECTOR[4]     ;
 typedef int sceVu0IMATRIX[4][4]  ;
 typedef float sceVu0FVECTOR[4]   ;
 typedef float sceVu0FMATRIX[4][4];
+typedef float LMATRIX[3][4];
 
 typedef void (*sceSifEndFunc)(/* parameters unknown */);
 typedef void *(*sceSifRpcFunc)(/* parameters unknown */);
