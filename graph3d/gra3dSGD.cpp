@@ -1,5 +1,6 @@
 #include "gra3dSGD.h"
 #include "../render/Vu1Mem.h"
+#include "../render/renderer.h"
 #include "../sce/libvu0.h"
 #include "g3dCore.h"
 #include "g3dDebug.h"
@@ -852,8 +853,6 @@ void SetVUMeshData(SGDPROCUNITHEADER *pPUHead)
   SGDVUMESHDATA *pVUMeshData = (SGDVUMESHDATA*) &pPUHead[1];
   SGDVUVNDESC *pVUVNDesc = (SGDVUVNDESC*)&s_ppuhVUVN->VUVNDesc;
   SGDVUVNDATA *pVUVNData = (SGDVUVNDATA*) &s_ppuhVUVN[1];
-  auto pVUVNData2 = (SGDPROCUNITDATA *) &s_ppuhVUVN[1];
-  std::vector<Vector3> v;
   
   switch (rVUMeshDesc.ucMeshType & 0xD3)
   {
@@ -876,23 +875,7 @@ void SetVUMeshData(SGDPROCUNITHEADER *pPUHead)
       gra3dCallMicroSubroutine2(nullptr);
       break;
     case 0x82:
-      
-      for (int i = 0; i < pVUVNDesc->sNumVertex; i++)
-      {
-        auto vv = Vector3(pVUVNData2->VUVNData_Preset.avt2[i].vVertex[0], 
-                          pVUVNData2->VUVNData_Preset.avt2[i].vVertex[1],
-                          pVUVNData2->VUVNData_Preset.avt2[i].vVertex[2]);
-        
-        auto m = (Matrix*)g_scratchpadLayout.Vu1Mem.Packed.Transform.matLocalWorld;
-
-        auto mt = MatrixTranspose(*m);
-        
-        vv = Vector3Transform(vv, mt);
-        v.push_back(vv);
-      }
-      
-      DrawTriangleStrip3D(v.data() , pVUVNDesc->sNumVertex, DARKGRAY);  
-      
+      MeshType0x82(s_ppuhVUVN, pPUHead);
       g3dDmaAddPacket(pVUMeshData, rVUMeshDesc.iTagSize);
       g3dDmaAddPacket(pVUVNData, pVUVNDesc->ucSize);
       // 0x598
