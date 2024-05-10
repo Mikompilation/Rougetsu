@@ -5,12 +5,11 @@
 #include "g3dCore.h"
 #include "g3dDebug.h"
 #include "g3dUtil.h"
+#include "glm/gtc/type_ptr.hpp"
 #include "gra3d.h"
 #include "gra3dDma.h"
 #include "gra3dSGDData.h"
 #include "gra3dShadow.h"
-#include "raylib.h"
-#include "raymath.h"
 #include <cstdio>
 #include <vector>
 
@@ -526,8 +525,9 @@ void sgdRemap(SGDFILEHEADER *pSGDHead)
     while (pPUHead)
     {
       g3ddbg_ASSERT(!((int) pPUHead & 0xf), "sgd is illegal")
-
-          if (!pPUHead->pNext)
+          
+      
+      if (!pPUHead->pNext)
       {
         break;
       }
@@ -896,6 +896,13 @@ void _SetCoordData(SGDPROCUNITHEADER *pPUHead)
   sgdCalcBoneCoordinate(s_pCoordBase, gra3dsgdGetNumBlock() - 1);
   SGDCOORDINATE *cp0 = gra3dsgdGetCoordinate(pPUHead->CoordDesc.iCoordId0);
   memcpy(&g_scratchpadLayout.Vu1Mem.Packed.Transform.matLocalWorld, &cp0->matCoord, sizeof(float[4][4]));
+  
+  glm::mat4 trans = glm::make_mat4((float*)g_scratchpadLayout.Vu1Mem.Packed.Transform.matLocalWorld);
+  
+  trans = glm::transpose(trans);
+  
+  unsigned int transformLoc = context->GetUniformLocation(shaderProgram, "transform");
+  context->UniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
 }
 
 /// NOT IMPLEMENTED

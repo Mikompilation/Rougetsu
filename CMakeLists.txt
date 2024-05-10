@@ -4,11 +4,16 @@ project(Rougetsu)
 set(CMAKE_CXX_STANDARD 20)
 
 list(PREPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
-include(raylib)
+#include(raylib)
+include(glfw)
+include(glad)
+include(glm)
+
+glad_add_library(glad_gl_core_mx_33 REPRODUCIBLE MX API gl:core=3.3)
 
 add_executable(Rougetsu 
         main.cpp
-        packfile.cpp
+        common/packfile.cpp
         
         # Graphics
         graph3d/gra3dSGD.cpp
@@ -31,4 +36,4 @@ add_executable(Rougetsu
         graph3d/g3d_types.h
 )
 
-target_link_libraries(Rougetsu raylib)
+target_link_libraries(Rougetsu glad_gl_core_mx_33 glfw glm::glm)

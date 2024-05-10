@@ -98,8 +98,6 @@ struct G3DLIGHT {
   /* 0x68 */ float afPad0[2];
 };
 
-
-
 struct G3DVIF1CODE_UNPACK { // 0x4
   /* 0x0:0 */ unsigned int ADDR: 10;
   /* 0x1:2 */ unsigned int pad: 4;

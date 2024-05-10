@@ -1,5 +1,5 @@
 #include "packfile.h"
-#include "utils.h"
+#include "../utils.h"
 
 int PakAlign128(int address)
 {
