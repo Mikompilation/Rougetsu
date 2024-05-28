@@ -899,7 +899,7 @@ void _SetCoordData(SGDPROCUNITHEADER *pPUHead)
   
   glm::mat4 trans = glm::make_mat4((float*)g_scratchpadLayout.Vu1Mem.Packed.Transform.matLocalWorld);
   
-  unsigned int transformLoc = context->GetUniformLocation(shaderProgram, "transform");
+  unsigned int transformLoc = context->GetUniformLocation(shaderProgram, "model");
   context->UniformMatrix4fv(transformLoc, 1, GL_TRUE, glm::value_ptr(trans));
 }
 

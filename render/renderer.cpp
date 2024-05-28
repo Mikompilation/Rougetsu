@@ -34,6 +34,11 @@ void MeshType0x82(SGDPROCUNITHEADER *pVUVN, SGDPROCUNITHEADER *pPUHead)
       v.push_back(pVUVNData->VUVNData_Preset.avt2[vertexOffset].vVertex[2]);
       vertexOffset++;
     }
+    
+    if(pMeshInfo[i].uiPointNum == 0)
+    {
+      continue;
+    }
   
     GLuint VAO, VBO;
   
@@ -47,7 +52,7 @@ void MeshType0x82(SGDPROCUNITHEADER *pVUVN, SGDPROCUNITHEADER *pPUHead)
     context->BindBuffer(GL_ARRAY_BUFFER, VBO);
   
     // Introduce the vertices into the VBO
-    context->BufferData(GL_ARRAY_BUFFER, pMeshInfo[i].uiPointNum * sizeof(GLfloat) * 3, v.data(), GL_STATIC_DRAW);
+    context->BufferData(GL_ARRAY_BUFFER, v.size() * sizeof(GLfloat), v.data(), GL_STATIC_DRAW);
 
     // Configure the Vertex Attribute so that OpenGL knows how to read the VBO
     context->VertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
