@@ -40,6 +40,9 @@ int main(int argc, const char *argv[])
   
   InitializeShaders();
   
+  glfwSetCursorPosCallback(window, mouse_callback);
+  glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+  
   auto pakFile = (PK2_HEAD *) ReadFullFile(argv[1]);
   auto mdlPak = (PK2_HEAD *) GetFileInPak(pakFile, 0);
   
@@ -52,6 +55,11 @@ int main(int argc, const char *argv[])
   
   while (!glfwWindowShouldClose(window))
   {    
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+    {
+      break;
+    }
+    
     int width, height;
     glfwGetFramebufferSize(window, &width, &height);
     

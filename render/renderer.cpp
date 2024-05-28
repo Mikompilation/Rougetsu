@@ -12,14 +12,13 @@ void HandleCamera(int width, int height)
   context->UniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
     
   // Projection
-  glm::mat4 projection = glm::perspective(glm::radians(90.0f), (float)width / (float)height, 0.1f, 100.0f);
+  glm::mat4 projection = glm::perspective(glm::radians(90.0f), (float)width / (float)height, 0.1f, 1000.0f);
   unsigned int projectionLoc = context->GetUniformLocation(shaderProgram, "projection");
   context->UniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
 }
 
 void MeshType0x82(SGDPROCUNITHEADER *pVUVN, SGDPROCUNITHEADER *pPUHead)
 {
-  
   SGDVUVNDESC *pVUVNDesc = (SGDVUVNDESC*)&pVUVN->VUVNDesc;
   SGDPROCUNITDATA *pVUVNData = (SGDPROCUNITDATA *) &pVUVN[1];
   SGDVUMESHPOINTNUM *pMeshInfo = (SGDVUMESHPOINTNUM *) &pPUHead[4];
@@ -51,7 +50,7 @@ void MeshType0x82(SGDPROCUNITHEADER *pVUVN, SGDPROCUNITHEADER *pPUHead)
     context->BufferData(GL_ARRAY_BUFFER, pMeshInfo[i].uiPointNum * sizeof(GLfloat) * 3, v.data(), GL_STATIC_DRAW);
 
     // Configure the Vertex Attribute so that OpenGL knows how to read the VBO
-    context->VertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+    context->VertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
   
     // Enable the Vertex Attribute so that OpenGL knows to use it
     context->EnableVertexAttribArray(0);

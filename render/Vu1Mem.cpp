@@ -1,5 +1,6 @@
 #include "Vu1Mem.h"
 #include "glm/geometric.hpp"
+#include "glm/trigonometric.hpp"
 #include <cstdlib>
 
 // Vertex Shader source code
@@ -73,6 +74,8 @@ void InitializeShaders()
   // Delete the now useless Vertex and Fragment Shader objects
   context->DeleteShader(vertexShader);
   context->DeleteShader(fragmentShader);
+  
+  //context->Enable(GL_DEPTH_TEST);
 }
 
 void processInput(GLFWwindow* window) 
@@ -91,4 +94,37 @@ void processInput(GLFWwindow* window)
     cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
   if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
     cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+}
+
+void mouse_callback(GLFWwindow* window, double xpos, double ypos) 
+{
+  if (firstMouse) {
+    lastX = xpos;
+    lastY = ypos;
+    firstMouse = false;
+  }
+  
+  float xoffset = xpos - lastX;
+  float yoffset = lastY - ypos; // Reversed since y-coordinates range from bottom to top
+  lastX = xpos;
+  lastY = ypos;
+
+  float sensitivity = 0.1f; // Change this value to your liking
+  xoffset *= sensitivity;
+  yoffset *= sensitivity;
+
+  yaw += xoffset;
+  pitch += yoffset;
+
+  // Make sure that when pitch is out of bounds, screen doesn't get flipped
+  if (pitch > 89.0f)
+    pitch = 89.0f;
+  if (pitch < -89.0f)
+    pitch = -89.0f;
+
+  glm::vec3 front;
+  front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+  front.y = sin(glm::radians(pitch));
+  front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+  cameraFront = glm::normalize(front);
 }
