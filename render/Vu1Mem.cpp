@@ -1,13 +1,16 @@
 #include "Vu1Mem.h"
+#include "glm/geometric.hpp"
 #include <cstdlib>
 
 // Vertex Shader source code
 const char* vertexShaderSource = "#version 330 core\n"
     "layout (location = 0) in vec3 aPos;\n"
     "uniform mat4 transform;\n"
+    "uniform mat4 view;\n"
+    "uniform mat4 projection;\n"
     "void main()\n"
     "{\n"
-    "   gl_Position = transform * vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+    "   gl_Position = projection * view * transform * vec4(aPos, 1.0);\n"
     "}\0";
 
 //Fragment Shader source code
@@ -70,4 +73,22 @@ void InitializeShaders()
   // Delete the now useless Vertex and Fragment Shader objects
   context->DeleteShader(vertexShader);
   context->DeleteShader(fragmentShader);
+}
+
+void processInput(GLFWwindow* window) 
+{
+  float currentFrame = glfwGetTime();
+  deltaTime = currentFrame - lastFrame;
+  lastFrame = currentFrame;
+  
+  float cameraSpeed = 25.0f * deltaTime;
+  
+  if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+    cameraPos += cameraSpeed * cameraFront;
+  if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+    cameraPos -= cameraSpeed * cameraFront;
+  if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+    cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+  if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+    cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
 }

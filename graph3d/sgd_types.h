@@ -516,6 +516,12 @@ struct PHEAD
 	u_int *pWeightedList;
 };
 
+struct SGDVUMESHPOINTNUM
+{
+  G3DVIF1CODE_UNPACK VifUnpack;
+  unsigned int uiPointNum;
+};
+
 #define SGD_VALID_VERSIONID 0x1050
 #define INVALID_SGD_OBJECTID -1
 

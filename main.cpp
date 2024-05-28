@@ -2,6 +2,7 @@
 #include "graph3d/gra3dSGD.h"
 #include "graph3d/sgd_types.h"
 #include "render/Vu1Mem.h"
+#include "render/renderer.h"
 #include <filesystem>
 #include <fstream>
 #include <iostream>
@@ -53,13 +54,15 @@ int main(int argc, const char *argv[])
   {    
     int width, height;
     glfwGetFramebufferSize(window, &width, &height);
-    const float ratio = width / (float) height;
     
     context->Viewport(0, 0, width, height);
     context->Clear(GL_COLOR_BUFFER_BIT);
     
+    processInput(window);
+    
     /* Render here */    
     /// Simulate DrawGirl
+    HandleCamera(width, height);
     _gra3dDrawSGD(sgdTop, SRT_REALTIME, nullptr, -1);
     
     /* Swap front and back buffers */
