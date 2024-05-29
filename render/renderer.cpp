@@ -2,11 +2,9 @@
 #include "Vu1Mem.h"
 #include "glm/ext/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
-#include <vector>
 
 void HandleCamera(int width, int height)
 {
-  vertexOffset = 0;
   glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
   unsigned int viewLoc = context->GetUniformLocation(shaderProgram, "view");
   context->UniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
@@ -19,9 +17,9 @@ void HandleCamera(int width, int height)
 
 void MeshType0x82(SGDPROCUNITHEADER *pVUVN, SGDPROCUNITHEADER *pPUHead)
 {
-  SGDVUVNDESC *pVUVNDesc = (SGDVUVNDESC*)&pVUVN->VUVNDesc;
   SGDPROCUNITDATA *pVUVNData = (SGDPROCUNITDATA *) &pVUVN[1];
   SGDVUMESHPOINTNUM *pMeshInfo = (SGDVUMESHPOINTNUM *) &pPUHead[4];
+  int vertexOffset = 0;
   
   for (int i = 0; i < pPUHead->VUMeshDesc.ucNumMesh; i++)
   {    
@@ -42,7 +40,7 @@ void MeshType0x82(SGDPROCUNITHEADER *pVUVN, SGDPROCUNITHEADER *pPUHead)
     context->BindBuffer(GL_ARRAY_BUFFER, VBO);
   
     // Introduce the vertices into the VBO
-    context->BufferData(GL_ARRAY_BUFFER, pMeshInfo[i].uiPointNum * sizeof(VECTOR3), &pVUVNData->VUVNData_Preset.avt2[vertexOffset], GL_STATIC_DRAW);
+    context->BufferData(GL_ARRAY_BUFFER, pMeshInfo[i].uiPointNum * sizeof(SGDMESHVERTEXDATA_TYPE2), &pVUVNData->VUVNData_Preset.avt2[vertexOffset], GL_STATIC_DRAW);
 
     // Configure the Vertex Attribute so that OpenGL knows how to read the VBO
     context->VertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(SGDMESHVERTEXDATA_TYPE2), nullptr);
@@ -53,9 +51,6 @@ void MeshType0x82(SGDPROCUNITHEADER *pVUVN, SGDPROCUNITHEADER *pPUHead)
     // Bind both the VBO and VAO to 0 so that we don't accidentally modify the VAO and VBO we created
     context->BindBuffer(GL_ARRAY_BUFFER, 0);
     context->BindVertexArray(0);
-  
-    // Tell OpenGL which Shader Program we want to use
-    context->UseProgram(shaderProgram);
   
     // Bind the VAO so OpenGL knows to use it
     context->BindVertexArray(VAO);

@@ -2,7 +2,7 @@
 #define ROUGETSU_RENDERER_H
 
 #include "../graph3d/sgd_types.h"
-inline int vertexOffset = 0;
+
 typedef void (*mesh_rendering)(SGDPROCUNITHEADER*,SGDPROCUNITHEADER*);
 void HandleCamera(int width, int height);
 void MeshType0x82(SGDPROCUNITHEADER *pVUVN, SGDPROCUNITHEADER *pPUHead);

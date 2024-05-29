@@ -11,7 +11,7 @@ const char* vertexShaderSource = "#version 330 core\n"
     "uniform mat4 projection;\n"
     "void main()\n"
     "{\n"
-    "   gl_Position = projection * view * model * vec4(aPos, 1.0);\n"
+    "   gl_Position = projection * view * model * vec4(aPos, 1.0f);\n"
     "}\0";
 
 //Fragment Shader source code
@@ -22,12 +22,29 @@ const char* fragmentShaderSource = "#version 330 core\n"
     "   FragColor = vec4(1.0f, 0.0f, 0.0f, 1.0f);\n"
     "}\n\0";
 
+void GLAPIENTRY
+MessageCallback( GLenum source,
+                GLenum type,
+                GLuint id,
+                GLenum severity,
+                GLsizei length,
+                const GLchar* message,
+                const void* userParam )
+{
+  fprintf( stderr, "GL CALLBACK: %s type = 0x%x, severity = 0x%x, message = %s\n",
+          ( type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : "" ),
+          type, severity, message );
+}
+
 int InitializeVu1Memory()
 {
   if (!glfwInit())
   {
     return -1;
   }
+  
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
   
   window = glfwCreateWindow(640, 480, "Rougetsu", NULL, NULL);
   if (!window)
@@ -40,6 +57,9 @@ int InitializeVu1Memory()
   glfwMakeContextCurrent(window);
   context = (GladGLContext*) calloc(1, sizeof(GladGLContext));
   int version = gladLoadGLContext(context, glfwGetProcAddress);
+  
+  context->Enable              ( GL_DEBUG_OUTPUT );
+  context->DebugMessageCallback( MessageCallback, 0 );
   
   return 0;
 }
@@ -74,6 +94,9 @@ void InitializeShaders()
   // Delete the now useless Vertex and Fragment Shader objects
   context->DeleteShader(vertexShader);
   context->DeleteShader(fragmentShader);
+  
+  // Tell OpenGL which Shader Program we want to use
+  context->UseProgram(shaderProgram);
   
   //context->Enable(GL_DEPTH_TEST);
 }
@@ -128,3 +151,4 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
   front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
   cameraFront = glm::normalize(front);
 }
+
