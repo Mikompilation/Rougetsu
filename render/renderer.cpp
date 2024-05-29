@@ -25,17 +25,7 @@ void MeshType0x82(SGDPROCUNITHEADER *pVUVN, SGDPROCUNITHEADER *pPUHead)
   
   for (int i = 0; i < pPUHead->VUMeshDesc.ucNumMesh; i++)
   {    
-    std::vector<GLfloat> v;
-    
-    for (int j = 0; j < pMeshInfo[i].uiPointNum; j++)
-    {
-      v.push_back(pVUVNData->VUVNData_Preset.avt2[vertexOffset].vVertex[0]);
-      v.push_back(pVUVNData->VUVNData_Preset.avt2[vertexOffset].vVertex[1]);
-      v.push_back(pVUVNData->VUVNData_Preset.avt2[vertexOffset].vVertex[2]);
-      vertexOffset++;
-    }
-    
-    if(pMeshInfo[i].uiPointNum == 0)
+    if (pMeshInfo[i].uiPointNum == 0)
     {
       continue;
     }
@@ -52,10 +42,10 @@ void MeshType0x82(SGDPROCUNITHEADER *pVUVN, SGDPROCUNITHEADER *pPUHead)
     context->BindBuffer(GL_ARRAY_BUFFER, VBO);
   
     // Introduce the vertices into the VBO
-    context->BufferData(GL_ARRAY_BUFFER, v.size() * sizeof(GLfloat), v.data(), GL_STATIC_DRAW);
+    context->BufferData(GL_ARRAY_BUFFER, pMeshInfo[i].uiPointNum * sizeof(VECTOR3), &pVUVNData->VUVNData_Preset.avt2[vertexOffset], GL_STATIC_DRAW);
 
     // Configure the Vertex Attribute so that OpenGL knows how to read the VBO
-    context->VertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
+    context->VertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(SGDMESHVERTEXDATA_TYPE2), nullptr);
   
     // Enable the Vertex Attribute so that OpenGL knows to use it
     context->EnableVertexAttribArray(0);
@@ -75,5 +65,7 @@ void MeshType0x82(SGDPROCUNITHEADER *pVUVN, SGDPROCUNITHEADER *pPUHead)
   
     context->DeleteVertexArrays(1, &VAO);
     context->DeleteBuffers(1, &VBO);
+    
+    vertexOffset += pMeshInfo[i].uiPointNum;
   }
 }
