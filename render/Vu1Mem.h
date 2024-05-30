@@ -16,6 +16,8 @@ inline GRA3DSCRATCHPADLAYOUT g_scratchpadLayout;
 inline GladGLContext* context;
 inline GLuint shaderProgram;
 
+inline bool wireframe = false;
+
 inline glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
 inline glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 inline glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);

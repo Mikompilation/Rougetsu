@@ -48,5 +48,8 @@ void sgdCalcCoordinateMatrix(SGDCOORDINATE *pCoord);
 void _SetCoordData(SGDPROCUNITHEADER *pPUHead);
 void SetVUMeshData(SGDPROCUNITHEADER *pPUHead);
 void SetVUVNData(SGDPROCUNITHEADER *pPUHead);
+SGDPROCUNITHEADER* _GetVUVNPRIM();
+int _GetEdgeCheck();
+unsigned int *GetNextUnpackAddr(unsigned int *prim);
 
 #endif //MIKOMPILATION_GRA3DSGD_H

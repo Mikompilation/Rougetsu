@@ -827,6 +827,84 @@ void sgdCalcCoordinateMatrix(SGDCOORDINATE *pCoord)
   }
 }
 
+void SetVUMeshDataP(SGDPROCUNITHEADER* pPUHead) 
+{
+  SGDVUMESHDESC& rVUMeshDesc = pPUHead->VUMeshDesc;
+  SGDVUMESHDATA_PRESET& rVUMeshData = (SGDVUMESHDATA_PRESET&)pPUHead[1];
+  
+  SGDVUVNDESC& rVUVNDesc = _GetVUVNPRIM()->VUVNDesc;
+  SGDVUVNDATA_PRESET& rVUVNData = (SGDVUVNDATA_PRESET&)_GetVUVNPRIM()[1];
+    
+  u_int dsize;
+    
+  switch (rVUMeshDesc.ucMeshType) 
+  {
+    case iMT_0:
+      gra3dDmaLoadVu1MicroProgram((unsigned int*)nullptr, 0);
+
+      g3dDmaAddPacket(rVUMeshData.alData, rVUMeshDesc.iTagSize);
+            
+      dsize = _GetVUVNPRIM()->VUVNDesc.ucSize;
+            
+      g3dDmaAddPacket(_GetVUVNPRIM() + 4, dsize);
+
+      if (_GetEdgeCheck()) 
+      {
+        gra3dCallMicroSubroutine1((unsigned int*)nullptr);
+      } 
+      else 
+      {
+        gra3dCallMicroSubroutine2((unsigned int*)nullptr);
+      }
+      break;
+    case iMT_2:
+    case iMT_2F:
+      MeshType_iMT_2F(_GetVUVNPRIM(), pPUHead);
+      gra3dDmaLoadVu1MicroProgram(nullptr, 0);
+      g3dDmaAddPacket(&rVUVNData, rVUVNDesc.ucSize);
+      g3dDmaAddPacket(rVUMeshData.alData, rVUMeshDesc.iTagSize);
+
+      if (_GetEdgeCheck()) 
+      {
+        gra3dCallMicroSubroutine1((unsigned int*)nullptr);
+      } 
+      else 
+      {
+        gra3dCallMicroSubroutine2((unsigned int*)nullptr);
+      }
+      break;
+    case 0x52:
+    case 0x72:
+      if (!_GetEdgeCheck()) 
+      {
+        gra3dCallMicroSubroutine2((unsigned int*)nullptr);
+      }
+      break;
+    default:
+      return;
+  }
+}
+
+SGDPROCUNITHEADER* _GetVUVNPRIM()
+{
+  return s_ppuhVUVN;
+}
+
+int _GetEdgeCheck()
+{
+  return edge_check;
+}
+
+unsigned int *GetNextUnpackAddr(unsigned int *prim)
+{
+  while ((*prim & 0x60000000) != 0x60000000)
+  {
+    prim = prim + 1;
+  }
+  
+  return prim;
+}
+
 /// Partially IMPLEMENTED
 void SgSortUnitPrimPost(SGDPROCUNITHEADER *pPUHead)
 {
@@ -939,10 +1017,6 @@ void GsImageProcess(const SGDPROCUNITHEADER *pPUHead)
 int CheckBoundingBox(SGDPROCUNITHEADER *pPUHead)
 {
   return 1;
-}
-
-void SetVUMeshDataP(SGDPROCUNITHEADER *pPUHead)
-{
 }
 
 int BoundingBoxCalcP(SGDPROCUNITHEADER *_prim)

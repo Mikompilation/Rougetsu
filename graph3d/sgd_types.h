@@ -522,6 +522,18 @@ struct SGDVUMESHPOINTNUM
   unsigned int uiPointNum;
 };
 
+struct SGDVUMESHST
+{
+  float fS;
+  float fT;
+};
+
+struct SGDVUMESHSTDATA
+{
+  struct G3DVIF1CODE_UNPACK VifUnpack;
+  struct SGDVUMESHST astData[1];
+};
+
 #define SGD_VALID_VERSIONID 0x1050
 #define INVALID_SGD_OBJECTID -1
 
